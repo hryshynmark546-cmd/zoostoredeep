@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZooMarket 🐾 - Админ-панель</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #388E3C;
+            --primary-light: #C8E6C9;
+            --secondary: #FF9800;
+            --danger: #f44336;
+            --dark: #263238;
+            --gray: #607D8B;
+            --light: #F5F5F5;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --shadow-hover: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Сайдбар */
+        .admin-sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--dark), #1a2a32);
+            color: white;
+            padding: 30px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .admin-logo {
+            padding: 0 20px 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 30px;
+        }
+
+        .admin-logo h2 {
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-logo i {
+            color: var(--primary);
+        }
+
+        .admin-menu {
+            list-style: none;
+        }
+
+        .admin-menu li {
+            margin-bottom: 5px;
+        }
+
+        .admin-menu a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+
+        .admin-menu a:hover,
+        .admin-menu a.active {
+            background: rgba(76, 175, 80, 0.2);
+            color: white;
+            border-left-color: var(--primary);
+        }
+
+        .admin-menu i {
+            width: 20px;
+            font-size: 18px;
+        }
+
+        .admin-menu .badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 50px;
+            font-size: 12px;
+        }
+
+        /* Основной контент */
+        .admin-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .admin-header h1 {
+            font-size: 24px;
+            color: var(--dark);
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        /* Карточки статистики */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-info h3 {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: var(--primary);
+        }
+
+        /* Таблицы */
+        .admin-table {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .table-header h2 {
+            font-size: 18px;
+            color: var(--dark);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 15px 10px;
+            border-bottom: 2px solid var(--light);
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px 10px;
+            border-bottom: 1px solid var(--light);
+        }
+
+        tr:hover {
+            background: var(--light);
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: var(--secondary);
+        }
+
+        .status-completed {
+            background: #e8f5e8;
+            color: var(--primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .edit-btn {
+            background: var(--primary);
+        }
+
+        .delete-btn {
+            background: var(--danger);
+        }
+
+        .view-btn {
+            background: var(--gray);
+        }
+
+        /* Формы */
+        .admin-form {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        /* Модальные окна */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            background: white;
+            border-radius: 30px;
+            overflow-y: auto;
+            padding: 40px;
+            position: relative;
+            transform: scale(0.9);
+            transition: all 0.3s;
+        }
+
+        .modal.open .modal-content {
+            transform: scale(1);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow-hover);
+            border-left: 5px solid var(--primary);
+            z-index: 3000;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Сайдбар -->
+        <div class="admin-sidebar">
+            <div class="admin-logo">
+                <h2><i class="fas fa-paw"></i> ZooMarket</h2>
+                <p style="font-size: 12px; opacity: 0.7; margin-top: 5px;">Админ-панель</p>
+            </div>
+
+            <ul class="admin-menu">
+                <li><a href="#" class="active" onclick="showSection('dashboard')"><i class="fas fa-home"></i> Дашборд</a></li>
+                <li><a href="#" onclick="showSection('products')"><i class="fas fa-box"></i> Товары</a></li>
+                <li><a href="#" onclick="showSection('categories')"><i class="fas fa-tags"></i> Категории</a></li>
+                <li><a href="#" onclick="showSection('brands')"><i class="fas fa-building"></i> Бренды</a></li>
+                <li><a href="#" onclick="showSection('orders')"><i class="fas fa-shopping-cart"></i> Заказы <span class="badge">12</span></a></li>
+                <li><a href="#" onclick="showSection('users')"><i class="fas fa-users"></i> Пользователи</a></li>
+                <li><a href="#" onclick="showSection('news')"><i class="fas fa-newspaper"></i> Новостная лента</a></li>
+                <li><a href="#" onclick="showSection('slides')"><i class="fas fa-images"></i> Слайдер</a></li>
+                <li><a href="#" onclick="showSection('discounts')"><i class="fas fa-percent"></i> Скидки и акции</a></li>
+                <li><a href="#" onclick="showSection('reviews')"><i class="fas fa-star"></i> Отзывы</a></li>
+                <li><a href="#" onclick="showSection('analytics')"><i class="fas fa-chart-line"></i> Аналитика</a></li>
+                <li><a href="#" onclick="showSection('settings')"><i class="fas fa-cog"></i> Настройки</a></li>
+                <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Выход</a></li>
+            </ul>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="admin-content">
+            <div class="admin-header">
+                <h1 id="pageTitle">Дашборд</h1>
+                <div class="admin-user">
+                    <span>Администратор</span>
+                    <div class="admin-avatar">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Секция Дашборд -->
+            <div id="dashboardSection">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Выручка сегодня</h3>
+                            <div class="stat-number">€ 2,450</div>
+                            <span style="color: var(--primary);">+15%</span>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-euro-sign"></i>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Заказов сегодня</h3>
+                            <div class="stat-number">24</div>
+                            <span style="color: var(--primary);">+8%</span>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Новые клиенты</h3>
+                            <div class="stat-number">12</div>
+                            <span style="color: var(--primary);">+5</span>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Товаров в наличии</h3>
+                            <div class="stat-number">156</div>
+                            <span style="color: var(--danger);">3 мало</span>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Графики (упрощенно) -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px; margin-bottom: 30px;">
+                    <div class="admin-table">
+                        <h2 style="margin-bottom: 20px;">Продажи за неделю</h2>
+                        <div style="height: 200px; background: var(--light); border-radius: 10px; display: flex; align-items: flex-end; padding: 20px; gap: 10px;">
+                            <div style="flex: 1; height: 60%; background: var(--primary); border-radius: 5px;"></div>
+                            <div style="flex: 1; height: 80%; background: var(--primary); border-radius: 5px;"></div>
+                            <div style="flex: 1; height: 45%; background: var(--primary); border-radius: 5px;"></div>
+                            <div style="flex: 1; height: 90%; background: var(--primary); border-radius: 5px;"></div>
+                            <div style="flex: 1; height: 70%; background: var(--primary); border-radius: 5px;"></div>
+                            <div style="flex: 1; height: 85%; background: var(--primary); border-radius: 5px;"></div>
+                            <div style="flex: 1; height: 55%; background: var(--primary); border-radius: 5px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="admin-table">
+                        <h2 style="margin-bottom: 20px;">Популярные категории</h2>
+                        <div style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>🐕 Собаки</span>
+                                <span>45%</span>
+                            </div>
+                            <div style="height: 8px; background: var(--light); border-radius: 4px;">
+                                <div style="width: 45%; height: 100%; background: var(--primary); border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>🐈 Кошки</span>
+                                <span>30%</span>
+                            </div>
+                            <div style="height: 8px; background: var(--light); border-radius: 4px;">
+                                <div style="width: 30%; height: 100%; background: var(--primary); border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>🐟 Рыбки</span>
+                                <span>15%</span>
+                            </div>
+                            <div style="height: 8px; background: var(--light); border-radius: 4px;">
+                                <div style="width: 15%; height: 100%; background: var(--primary); border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Последние заказы -->
+                <div class="admin-table">
+                    <div class="table-header">
+                        <h2>Последние заказы</h2>
+                        <button class="btn" onclick="showSection('orders')"><i class="fas fa-eye"></i> Все заказы</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>№ заказа</th>
+                                <th>Клиент</th>
+                                <th>Сумма</th>
+                                <th>Статус</th>
+                                <th>Дата</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#ZO-2403-001</td>
+                                <td>Иван Петров</td>
+                                <td>€ 45.50</td>
+                                <td><span class="status-badge status-completed">Доставлен</span></td>
+                                <td>17.03.2024</td>
+                            </tr>
+                            <tr>
+                                <td>#ZO-2403-002</td>
+                                <td>Анна Смирнова</td>
+                                <td>€ 89.90</td>
+                                <td><span class="status-badge status-pending">В пути</span></td>
+                                <td>17.03.2024</td>
+                            </tr>
+                            <tr>
+                                <td>#ZO-2403-003</td>
+                                <td>Михаил Иванов</td>
+                                <td>€ 123.00</td>
+                                <td><span class="status-badge status-active">Обработка</span></td>
+                                <td>16.03.2024</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Секция Товары -->
+            <div id="productsSection" style="display: none;">
+                <div class="admin-table">
+                    <div class="table-header">
+                        <h2>Управление товарами</h2>
+                        <button class="btn" onclick="openProductModal()"><i class="fas fa-plus"></i> Добавить товар</button>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Фото</th>
+                                <th>Название</th>
+                                <th>Категория</th>
+                                <th>Цена (€)</th>
+                                <th>Скидка</th>
+                                <th>Наличие</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <tr>
+                                <td>🐕</td>
+                                <td>Royal Canin Medium</td>
+                                <td>Собаки / Корма</td>
+                                <td>32.50</td>
+                                <td><span class="status-badge status-active">-15%</span></td>
+                                <td>45 шт</td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit-btn" onclick="editProduct(1)"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete-btn" onclick="deleteProduct(1)"><i class="fas fa-trash"></i></button>
+                                    <button class="action-btn view-btn" onclick="viewProduct(1)"><i class="fas fa-eye"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>🐈</td>
+                                <td>Whiskas для кошек</td>
+                                <td>Кошки / Корма</td>
+                                <td>22.90</td>
+                                <td>-</td>
+                                <td>78 шт</td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                                    <button class="action-btn view-btn"><i class="fas fa-eye"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Секция Категории -->
+            <div id="categoriesSection" style="display: none;">
+                <div class="admin-table">
+                    <div class="table-header">
+                        <h2>Категории товаров</h2>
+                        <button class="btn" onclick="openCategoryModal()"><i class="fas fa-plus"></i> Добавить категорию</button>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Иконка</th>
+                                <th>Название</th>
+                                <th>Родительская</th>
+                                <th>Уровень</th>
+                                <th>Товаров</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><i class="fas fa-dog"></i></td>
+                                <td>Собаки</td>
+                                <td>-</td>
+                                <td>1</td>
+                                <td>45</td>
+                                <td><span class="status-badge status-active">Активна</span></td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-cat"></i></td>
+                                <td>Кошки</td>
+                                <td>-</td>
+                                <td>1</td>
+                                <td>38</td>
+                                <td><span class="status-badge status-active">Активна</span></td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>🍖</td>
+                                <td>Корма для собак</td>
+                                <td>Собаки</td>
+                                <td>2</td>
+                                <td>23</td>
+                                <td><span class="status-badge status-active">Активна</span></td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Секция Бренды -->
+            <div id="brandsSection" style="display: none;">
+                <div class="admin-table">
+                    <div class="table-header">
+                        <h2>Управление брендами</h2>
+                        <button class="btn"><i class="fas fa-plus"></i> Добавить бренд</button>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Логотип</th>
+                                <th>Название</th>
+                                <th>Страна</th>
+                                <th>Товаров</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><i class="fas fa-dog"></i></td>
+                                <td>Royal Canin</td>
+                                <td>Франция</td>
+                                <td>12</td>
+                                <td><span class="status-badge status-active">Активен</span></td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-cat"></i></td>
+                                <td>Whiskas</td>
+                                <td>США</td>
+                                <td>8</td>
+                                <td><span class="status-badge status-active">Активен</span></td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Секция Заказы -->
+            <div id="ordersSection" style="display: none;">
+                <div class="admin-table">
+                    <div class="table-header">
+                        <h2>Управление заказами</h2>
+                        <div style="display: flex; gap: 10px;">
+                            <select class="filter-select" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 10px;">
+                                <option>Все статусы</option>
+                                <option>Новые</option>
+                                <option>В обработке</option>
+                                <option>Доставлены</option>
+                            </select>
+                            <button class="btn btn-secondary"><i class="fas fa-download"></i> Экспорт</button>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>№ заказа</th>
+                                <th>Клиент</th>
+                                <th>Товары</th>
+                                <th>Сумма</th>
+                                <th>Статус</th>
+                                <th>Оплата</th>
+                                <th>Дата</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#ZO-2403-001</td>
+                                <td>Иван Петров<br><small>ivan@mail.com</small></td>
+                                <td>Корм Royal Canin x2</td>
+                                <td>€ 45.50</td>
+                                <td><span class="status-badge status-completed">Доставлен</span></td>
+                                <td><span class="status-badge status-active">Оплачен</span></td>
+                                <td>17.03.2024</td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn view-btn"><i class="fas fa-eye"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#ZO-2403-002</td>
+                                <td>Анна Смирнова<br><small>anna@mail.com</small></td>
+                                <td>Когтеточка, игрушки</td>
+                                <td>€ 89.90</td>
+                                <td><span class="status-badge status-pending">В пути</span></td>
+                                <td><span class="status-badge status-active">Оплачен</span></td>
+                                <td>17.03.2024</td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn view-btn"><i class="fas fa-eye"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Секция Пользователи -->
+            <div id="usersSection" style="display: none;">
+                <div class="admin-table">
+                    <div class="table-header">
+                        <h2>Пользователи</h2>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" placeholder="Поиск пользователя..." style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 10px; width: 300px;">
+                            <button class="btn"><i class="fas fa-search"></i> Найти</button>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Пользователь</th>
+                                <th>Email</th>
+                                <th>Телефон</th>
+                                <th>Заказов</th>
+                                <th>Сумма</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div style="width: 30px; height: 30px; background: var(--light); border-radius: 50%; display: flex; align-items: center; justify-content: center;">👤</div>
+                                        Иван Петров
+                                    </div>
+                                </td>
+                                <td>ivan@mail.com</td>
+                                <td>+7 999 123-45-67</td>
+                                <td>5</td>
+                                <td>€ 234.50</td>
+                                <td><span class="status-badge status-active">Активен</span></td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn view-btn"><i class="fas fa-ban"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Секция Новостная лента -->
+            <div id="newsSection" style="display: none;">
+                <div class="admin-table">
+                    <div class="table-header">
+                        <h2>Новостная лента</h2>
+                        <button class="btn" onclick="openNewsModal()"><i class="fas fa-plus"></i> Добавить новость</button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                        <div style="border: 1px solid var(--light); border-radius: 15px; overflow: hidden;">
+                            <img src="https://via.placeholder.com/300x200/4CAF50/ffffff?text=Новость+1" style="width: 100%; height: 150px; object-fit: cover;">
+                            <div style="padding: 15px;">
+                                <h3>Новая коллекция игрушек</h3>
+                                <p style="color: var(--gray); font-size: 14px;">17.03.2024</p>
+                                <p>Поступление новых игрушек для кошек и собак</p>
+                                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                    <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 12px;">Редактировать</button>
+                                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Удалить</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="border: 1px solid var(--light); border-radius: 15px; overflow: hidden;">
+                            <img src="https://via.placeholder.com/300x200/FF9800/ffffff?text=Акция" style="width: 100%; height: 150px; object-fit: cover;">
+                            <div style="padding: 15px;">
+                                <h3>Скидки до 50%</h3>
+                                <p style="color: var(--gray); font-size: 14px;">16.03.2024</p>
+                                <p>Мега-распродажа кормов премиум-класса</p>
+                                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                    <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 12px;">Редактировать</button>
+                                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Удалить</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Секция Слайдер -->
+            <div id="slidesSection" style="display: none;">
+                <div class="admin-table">
+                    <div class="table-header">
+                        <h2>Управление слайдером</h2>
+                        <button class="btn" onclick="openSlideModal()"><i class="fas fa-plus"></i> Добавить слайд</button>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>Слайд 1</h3>
+                                <p>Главный баннер</p>
+                            </div>
+                            <div style="width: 100px; height: 60px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 10px;"></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>Слайд 2</h3>
+                                <p>Акция на корма</p>
+                            </div>
+                            <div style="width: 100px; height: 60px; background: linear-gradient(135deg, #f093fb, #f5576c); border-radius: 10px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно товара -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('productModal')"><i class="fas fa-times"></i></button>
+            <h2 style="margin-bottom: 30px;">Добавить/редактировать товар</h2>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Название товара</label>
+                    <input type="text" placeholder="Введите название">
+                </div>
+                
+                <div class="form-group">
+                    <label>Категория</label>
+                    <select>
+                        <option>Собаки / Корма</option>
+                        <option>Кошки / Корма</option>
+                        <option>Рыбки / Аквариумы</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Бренд</label>
+                    <select>
+                        <option>Royal Canin</option>
+                        <option>Whiskas</option>
+                        <option>Tetra</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Цена (€)</label>
+                    <input type="number" step="0.01" placeholder="0.00">
+                </div>
+                
+                <div class="form-group">
+                    <label>Скидка %</label>
+                    <input type="number" placeholder="0">
+                </div>
+                
+                <div class="form-group">
+                    <label>Количество</label>
+                    <input type="number" placeholder="0">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Описание</label>
+                <textarea rows="4" placeholder="Полное описание товара"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Изображения</label>
+                <input type="file" multiple accept="image/*">
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="closeModal('productModal')">Отмена</button>
+                <button class="btn" onclick="saveProduct()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно категории -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('categoryModal')"><i class="fas fa-times"></i></button>
+            <h2 style="margin-bottom: 30px;">Добавить категорию</h2>
+            
+            <div class="form-group">
+                <label>Название категории</label>
+                <input type="text" placeholder="Например: Собаки">
+            </div>
+            
+            <div class="form-group">
+                <label>Родительская категория</label>
+                <select>
+                    <option>Нет (корневая)</option>
+                    <option>Собаки</option>
+                    <option>Кошки</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Иконка</label>
+                <select>
+                    <option><i class="fas fa-dog"></i> Собака</option>
+                    <option><i class="fas fa-cat"></i> Кошка</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Описание</label>
+                <textarea rows="3" placeholder="Описание категории"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="closeModal('categoryModal')">Отмена</button>
+                <button class="btn" onclick="saveCategory()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно новости -->
+    <div class="modal" id="newsModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('newsModal')"><i class="fas fa-times"></i></button>
+            <h2 style="margin-bottom: 30px;">Добавить новость</h2>
+            
+            <div class="form-group">
+                <label>Заголовок</label>
+                <input type="text" placeholder="Введите заголовок новости">
+            </div>
+            
+            <div class="form-group">
+                <label>Текст новости</label>
+                <textarea rows="4" placeholder="Текст новости"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Изображение</label>
+                <input type="file" accept="image/*">
+            </div>
+            
+            <div class="form-group">
+                <label>Ссылка (если есть)</label>
+                <input type="text" placeholder="https://...">
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="closeModal('newsModal')">Отмена</button>
+                <button class="btn" onclick="saveNews()">Опубликовать</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Переключение секций
+        function showSection(section) {
+            // Скрыть все секции
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('productsSection').style.display = 'none';
+            document.getElementById('categoriesSection').style.display = 'none';
+            document.getElementById('brandsSection').style.display = 'none';
+            document.getElementById('ordersSection').style.display = 'none';
+            document.getElementById('usersSection').style.display = 'none';
+            document.getElementById('newsSection').style.display = 'none';
+            document.getElementById('slidesSection').style.display = 'none';
+            
+            // Показать выбранную секцию
+            document.getElementById(section + 'Section').style.display = 'block';
+            
+            // Обновить заголовок
+            const titles = {
+                'dashboard': 'Дашборд',
+                'products': 'Управление товарами',
+                'categories': 'Категории',
+                'brands': 'Бренды',
+                'orders': 'Заказы',
+                'users': 'Пользователи',
+                'news': 'Новостная лента',
+                'slides': 'Слайдер'
+            };
+            document.getElementById('pageTitle').textContent = titles[section];
+            
+            // Подсветка активного пункта меню
+            document.querySelectorAll('.admin-menu a').forEach(a => a.classList.remove('active'));
+            event.target.closest('a').classList.add('active');
+        }
+
+        // Модальные окна
+        function openModal(id) {
+            document.getElementById(id).classList.add('open');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+        }
+
+        function openProductModal() {
+            openModal('productModal');
+        }
+
+        function openCategoryModal() {
+            openModal('categoryModal');
+        }
+
+        function openNewsModal() {
+            openModal('newsModal');
+        }
+
+        function openSlideModal() {
+            alert('Форма добавления слайда');
+        }
+
+        // Сохранение
+        function saveProduct() {
+            closeModal('productModal');
+            showNotification('✅ Товар сохранен');
+        }
+
+        function saveCategory() {
+            closeModal('categoryModal');
+            showNotification('✅ Категория добавлена');
+        }
+
+        function saveNews() {
+            closeModal('newsModal');
+            showNotification('✅ Новость опубликована');
+        }
+
+        // Действия с товарами
+        function editProduct(id) {
+            openProductModal();
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Вы уверены, что хотите удалить этот товар?')) {
+                showNotification('🗑️ Товар удален');
+            }
+        }
+
+        function viewProduct(id) {
+            alert('Просмотр товара #' + id);
+        }
+
+        // Выход
+        function logout() {
+            if (confirm('Выйти из админ-панели?')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Уведомления
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            // Проверка авторизации
+            const isAdmin = prompt('Введите пароль администратора:', 'admin');
+            if (isAdmin !== 'admin') {
+                alert('Доступ запрещен');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>
