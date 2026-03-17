@@ -1493,7 +1493,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         // Инициализация Swiper
-        const swiper = new Swiper('.swiper', {
+        window.swiper = new Swiper('.swiper', {
             loop: true,
             autoplay: {
                 delay: 5000,
@@ -2165,6 +2165,54 @@
         // Инициализация
         loadProducts();
         updateCartCount();
+
+        // Загрузка слайдов из localStorage
+        function loadSlides() {
+            // Берём слайды из localStorage, если их нет — используем запасные
+            const slides = JSON.parse(localStorage.getItem('slides')) || [
+                { title: 'Мега-распродажа!', text: 'Скидки до 70% на корма премиум-класса', image: 'linear-gradient(135deg, #667eea, #764ba2)', link: 'sale' },
+                { title: 'Новинки недели', text: 'Игрушки с искусственным интеллектом для ваших питомцев', image: 'linear-gradient(135deg, #f093fb, #f5576c)', link: 'new' }
+            ];
+            
+            // Находим контейнер слайдера
+            const swiperWrapper = document.querySelector('.swiper-wrapper');
+            if (!swiperWrapper) return; // если слайдера нет — выходим
+            
+            // Формируем HTML для каждого слайда
+            swiperWrapper.innerHTML = slides.map(slide => `
+                <div class="swiper-slide" style="background: ${slide.image};">
+                    <div class="slide-content">
+                        <h2>${slide.title}</h2>
+                        <p>${slide.text}</p>
+                        <button class="slide-btn" onclick="showCategory('${slide.link}')">Смотреть товары <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Если слайдер уже был инициализирован — обновляем его
+            if (window.swiper) {
+                window.swiper.update();
+            } else {
+                // Если нет — инициализируем заново (на всякий случай)
+                window.swiper = new Swiper('.swiper', {
+                    loop: true,
+                    autoplay: { delay: 5000 },
+                    pagination: { el: '.swiper-pagination', clickable: true },
+                });
+            }
+        }
+
+        // Вызвать функцию после полной загрузки страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ждём немного, чтобы убедиться, что Swiper загрузился
+            setTimeout(loadSlides, 100);
+        });
+
+        // Функция showCategory (была пропущена в скрипте)
+        function showCategory(type) {
+            document.getElementById('productsGrid').scrollIntoView({ behavior: 'smooth' });
+            showNotification('Переход к категории: ' + type);
+        }
     </script>
 </body>
 </html>
